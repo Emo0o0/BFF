@@ -7,7 +7,7 @@ import com.example.bff.api.inputoutput.getItemsByTag.ItemsGetByTagOperation;
 import com.example.zoostore.api.operations.inputOutput.item.getAllItemsByTag.GetAllItemsByTagListOutput;
 import com.example.zoostore.api.operations.inputOutput.item.getAllItemsByTag.GetAllItemsByTagOutput;
 import com.example.zoostore.restexport.ZooStoreRestClient;
-import com.example.zoostorestorage.api.inputOutput.getItemFromStorage.GetItemFromStorageOutput;
+import com.example.zoostorestorage.api.inputOutput.item.getItemFromStorage.GetItemFromStorageOutput;
 import com.example.zoostorestorage.restexport.ZooStorageRestClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

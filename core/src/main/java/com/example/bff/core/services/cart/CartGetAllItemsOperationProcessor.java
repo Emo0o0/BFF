@@ -5,6 +5,7 @@ import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromC
 import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromCartListOutput;
 import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromCartOutput;
 import com.example.bff.core.exceptions.CartItemNotFoundException;
+import com.example.bff.core.exceptions.NoItemsInCartException;
 import com.example.bff.core.exceptions.UserNotFoundException;
 import com.example.bff.persistence.entities.CartItem;
 import com.example.bff.persistence.entities.User;
@@ -52,6 +53,10 @@ public class CartGetAllItemsOperationProcessor implements CartGetAllItemsOperati
         }
 
         GetItemsListInput listInput = GetItemsListInput.builder().ids(ids).build();
+        if (listInput.getIds().isEmpty()) {
+            throw new NoItemsInCartException("Your cart is empty");
+        }
+
         GetItemsListOutput items = zooStoreRestClient.getItemsList(listInput);
 
         BigDecimal totalPrice = BigDecimal.valueOf(0.0);
@@ -63,7 +68,7 @@ public class CartGetAllItemsOperationProcessor implements CartGetAllItemsOperati
                     .findFirst()
                     .orElseThrow(() -> new CartItemNotFoundException("cart item not found."));
 
-            totalPrice = totalPrice.add(BigDecimal.valueOf(cartItem.getPrice().doubleValue()*cartItem.getQuantity()));
+            totalPrice = totalPrice.add(BigDecimal.valueOf(cartItem.getPrice().doubleValue() * cartItem.getQuantity()));
 
             GetAllItemsFromCartOutput output = GetAllItemsFromCartOutput.builder()
                     .id(i.getId())
@@ -74,7 +79,7 @@ public class CartGetAllItemsOperationProcessor implements CartGetAllItemsOperati
                     .multimedia(i.getMultimedia())
                     .tags(i.getTags())
                     .quantity(String.valueOf(cartItem.getQuantity()))
-                    .price(String.valueOf(cartItem.getPrice().doubleValue()*cartItem.getQuantity()))
+                    .price(String.valueOf(cartItem.getPrice().doubleValue() * cartItem.getQuantity()))
                     .build();
 
             outputList.getItemsList().add(output);

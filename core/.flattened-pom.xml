@@ -31,6 +31,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.example.zoostorestorage</groupId>
+      <artifactId>core</artifactId>
+      <version>0.0.7-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>io.springfox</groupId>
       <artifactId>springfox-swagger2</artifactId>
       <version>3.0.0</version>

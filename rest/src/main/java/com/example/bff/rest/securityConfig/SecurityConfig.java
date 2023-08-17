@@ -41,6 +41,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/webjars/**",
                                 "/swagger-ui.html").permitAll()
+                        //.requestMatchers("/coupon","/coupon/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors(c -> c.disable())

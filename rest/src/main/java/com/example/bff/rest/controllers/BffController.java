@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bff")
 public class BffController {
 
-    private final ItemGetByIdOperation itemGetByIdOperation;
+    //private final ItemGetByIdOperation itemGetByIdOperation;
     private final ItemsGetByTagOperation itemsGetByTagOperation;
 
-    @GetMapping(path = "/item/{id}")
-    public ResponseEntity<GetItemOutput> getItemById(@Valid @PathVariable String id) {
-        GetItemInput input = GetItemInput.builder()
-                .itemId(id)
-                .build();
-        return ResponseEntity.status(200).body(itemGetByIdOperation.process(input));
-    }
+    //@GetMapping(path = "/item/{id}")
+    //public ResponseEntity<GetItemOutput> getItemById(@Valid @PathVariable String id) {
+    //    GetItemInput input = GetItemInput.builder()
+    //            .itemId(id)
+    //            .build();
+    //    return ResponseEntity.status(200).body(itemGetByIdOperation.process(input));
+    //}
 
     @GetMapping(path = "/itemsByTag")
     public ResponseEntity<GetItemsByTagListOutput> getItemsByTag(@RequestParam(name = "title") String title,

@@ -13,6 +13,9 @@ import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.CartGetAllItemsO
 import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromCartInput;
 import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromCartListOutput;
 import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromCartOutput;
+import com.example.bff.api.inputoutput.cart.purchase.CartPurchaseOperation;
+import com.example.bff.api.inputoutput.cart.purchase.PurchaseInput;
+import com.example.bff.api.inputoutput.cart.purchase.PurchaseOutput;
 import com.example.bff.api.inputoutput.cart.removeItemFromCart.CartRemoveItemOperation;
 import com.example.bff.api.inputoutput.cart.removeItemFromCart.RemoveItemFromCartInput;
 import com.example.bff.api.inputoutput.cart.removeItemFromCart.RemoveItemFromCartOutput;
@@ -55,8 +58,9 @@ public class UserController {
     private final CartDropOperation cartDropOperation;
     private final CartRemoveItemOperation cartRemoveItemOperation;
     private final CartGetAllItemsOperation cartGetAllItemsOperation;
+    private final CartPurchaseOperation cartPurchaseOperation;
 
-    @PostMapping
+    @PostMapping(path = "/register")
     public ResponseEntity<RegisterUserOutput> registerUser(@Valid @RequestBody RegisterUserInput input) {
         return ResponseEntity.status(201).body(userRegisterOperation.process(input));
     }
@@ -108,5 +112,10 @@ public class UserController {
     public ResponseEntity<GetAllItemsFromCartListOutput> getCart() {
         GetAllItemsFromCartInput input = GetAllItemsFromCartInput.builder().build();
         return ResponseEntity.status(200).body(cartGetAllItemsOperation.process(input));
+    }
+
+    @PostMapping(path = "/purchase")
+    public ResponseEntity<PurchaseOutput> purchase(@RequestBody PurchaseInput input){
+        return ResponseEntity.status(200).body(cartPurchaseOperation.process(input));
     }
 }

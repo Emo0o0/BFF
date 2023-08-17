@@ -37,6 +37,18 @@
             <version>${revision}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.example.zoostorestorage</groupId>
+            <artifactId>core</artifactId>
+            <version>${storage.revision}</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.example.zoostorage</groupId>-->
+<!--            <artifactId>api</artifactId>-->
+<!--            <version>${storage.revision}</version>-->
+<!--        </dependency>-->
+
     </dependencies>
 
 </project>

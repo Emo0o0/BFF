@@ -9,4 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PurchaseInput implements OperationInput {
+
+    private String coupon;
+
 }

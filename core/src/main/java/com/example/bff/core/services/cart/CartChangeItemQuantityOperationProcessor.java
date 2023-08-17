@@ -11,7 +11,7 @@ import com.example.bff.persistence.entities.CartItem;
 import com.example.bff.persistence.entities.User;
 import com.example.bff.persistence.repositories.CartItemRepository;
 import com.example.bff.persistence.repositories.UserRepository;
-import com.example.zoostorestorage.api.inputOutput.getItemFromStorage.GetItemFromStorageOutput;
+import com.example.zoostorestorage.api.inputOutput.item.getItemFromStorage.GetItemFromStorageOutput;
 import com.example.zoostorestorage.restexport.ZooStorageRestClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
