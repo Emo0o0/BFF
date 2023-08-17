@@ -10,10 +10,10 @@ import com.example.bff.persistence.entities.User;
 import com.example.bff.persistence.repositories.CartItemRepository;
 import com.example.bff.persistence.repositories.CouponRepository;
 import com.example.bff.persistence.repositories.UserRepository;
-import com.example.zoostorestorage.api.inputOutput.item.getItemFromStorage.GetItemFromStorageOutput;
-import com.example.zoostorestorage.api.inputOutput.order.CreateOrderRecordInput;
-import com.example.zoostorestorage.api.inputOutput.order.OrderRecordCreateOperation;
-import com.example.zoostorestorage.api.inputOutput.order.OrderRecordItemOutput;
+import com.example.zoostorestorage.api.inputoutput.item.getfromstorage.GetItemFromStorageOutput;
+import com.example.zoostorestorage.api.inputoutput.order.CreateOrderRecordInput;
+import com.example.zoostorestorage.api.inputoutput.order.OrderRecordCreateOperation;
+import com.example.zoostorestorage.api.inputoutput.order.OrderRecordItemOutput;
 import com.example.zoostorestorage.restexport.ZooStorageRestClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -43,8 +43,12 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
             throw new NoItemsInCartException("Your cart is empty");
         }
 
-        Coupon coupon = couponRepository.findByTitle(purchaseInput.getCoupon())
-                .orElseThrow(() -> new CouponNotFoundException("This coupon does not exist or is expired"));
+        double couponDiscount=0;
+        if (!purchaseInput.getCoupon().isBlank()) {
+            Coupon coupon = couponRepository.findByTitle(purchaseInput.getCoupon())
+                    .orElseThrow(() -> new CouponNotFoundException("This coupon does not exist or is expired"));
+            couponDiscount=coupon.getDiscount();
+        }
 
         user.getCartItems().stream().forEach(item -> {
             GetItemFromStorageOutput storageItem;
@@ -69,7 +73,7 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
                                 .price(o.getPrice().toString())
                                 .build())
                         .collect(Collectors.toList()))
-                .totalPrice(cartTotalPrice().multiply(BigDecimal.valueOf(1 - (coupon.getDiscount() / 100))).toString())
+                .totalPrice(cartTotalPrice().multiply(BigDecimal.valueOf(1 - (couponDiscount / 100))).toString())
                 .build();
 
         zooStorageRestClient.createOrderRecord(input);

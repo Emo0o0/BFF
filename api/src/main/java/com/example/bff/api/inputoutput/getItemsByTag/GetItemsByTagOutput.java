@@ -1,8 +1,8 @@
 package com.example.bff.api.inputoutput.getItemsByTag;
 
 import com.example.bff.api.base.OperationResult;
-import com.example.zoostore.api.operations.inputOutput.vendor.getVendorById.MultimediaToDtoSetMap;
-import com.example.zoostore.api.operations.inputOutput.vendor.getVendorById.TagsToDtoSetMap;
+import com.example.zoostore.api.operations.inputoutput.vendor.getbyid.MultimediaToDtoSetMap;
+import com.example.zoostore.api.operations.inputoutput.vendor.getbyid.TagsToDtoSetMap;
 import lombok.*;
 
 import java.util.Set;
