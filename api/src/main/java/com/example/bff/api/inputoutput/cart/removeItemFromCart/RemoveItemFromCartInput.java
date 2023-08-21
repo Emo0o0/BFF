@@ -12,6 +12,5 @@ import lombok.*;
 public class RemoveItemFromCartInput implements OperationInput {
 
     private String itemId;
-    private String userId;
 
 }

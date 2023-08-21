@@ -6,6 +6,7 @@ import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,13 +14,17 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class ZooStoreRestClientFactory {
 
+
+    @Value("${ZOO_STORE_API_HOST}")
+    private String businessURL;
+
     @Bean
     ZooStoreRestClient getZooStoreRestClient() {
         final ObjectMapper objectMapper = new ObjectMapper();
         return Feign.builder()
                 .encoder(new JacksonEncoder(objectMapper))
                 .decoder(new JacksonDecoder(objectMapper))
-                .target(ZooStoreRestClient.class, "http://localhost:8080");
+                .target(ZooStoreRestClient.class, businessURL);
     }
 
 }

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,27 @@ public class ItemsGetByTagOperationProcessor implements ItemsGetByTagOperation {
 
 
         GetAllItemsByTagListOutput items = zooStoreRestClient.getItemsByTag(input.getTagTitle(), input.getItemsPerPage(), input.getCurrentPage());
-        GetItemsByTagListOutput outputList = GetItemsByTagListOutput.builder().items(new HashSet<>()).build();
 
+
+        GetItemsByTagListOutput outputList = GetItemsByTagListOutput.builder()
+                .items(items.getItems().stream()
+                        .map(item -> {
+                            GetItemFromStorageOutput storageItem = zooStorageRestClient.getItemFromStorage(item.getId());
+
+                            return GetItemsByTagOutput.builder()
+                                    .id(item.getId().toString())
+                                    .title(item.getTitle())
+                                    .description(item.getDescription())
+                                    .archived(Boolean.valueOf(item.getArchived()))
+                                    .vendorID(item.getVendorID())
+                                    .multimedia(item.getMultimedia())
+                                    .tags(item.getTags())
+                                    .quantity(storageItem.getQuantity())
+                                    .price(storageItem.getPrice())
+                                    .build();
+                        })
+                        .collect(Collectors.collectingAndThen(Collectors.toSet(), HashSet::new)))
+                .build();
 
         for (GetAllItemsByTagOutput item : items.getItems()) {
 

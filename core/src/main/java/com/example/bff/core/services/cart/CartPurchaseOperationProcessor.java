@@ -43,11 +43,13 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
             throw new NoItemsInCartException("Your cart is empty");
         }
 
-        double couponDiscount=0;
+        Double couponDiscount = 0.0d;
+        String couponTitle = "";
         if (!purchaseInput.getCoupon().isBlank()) {
             Coupon coupon = couponRepository.findByTitle(purchaseInput.getCoupon())
                     .orElseThrow(() -> new CouponNotFoundException("This coupon does not exist or is expired"));
-            couponDiscount=coupon.getDiscount();
+            couponDiscount = coupon.getDiscount();
+            couponTitle = coupon.getTitle();
         }
 
         user.getCartItems().stream().forEach(item -> {
@@ -63,7 +65,6 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
             }
         });
 
-
         CreateOrderRecordInput input = CreateOrderRecordInput.builder()
                 .userId(user.getId().toString())
                 .items(user.getCartItems().stream()
@@ -73,6 +74,8 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
                                 .price(o.getPrice().toString())
                                 .build())
                         .collect(Collectors.toList()))
+                .coupon(couponTitle)
+                .discount(String.valueOf(cartTotalPrice().multiply(BigDecimal.valueOf(couponDiscount / 100))))
                 .totalPrice(cartTotalPrice().multiply(BigDecimal.valueOf(1 - (couponDiscount / 100))).toString())
                 .build();
 
@@ -101,8 +104,5 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
         }
         return totalPrice;
 
-        /*return user.getCartItems().stream()
-                .map(CartItem::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
     }
 }

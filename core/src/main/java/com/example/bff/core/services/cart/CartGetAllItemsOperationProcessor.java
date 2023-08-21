@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,10 +48,9 @@ public class CartGetAllItemsOperationProcessor implements CartGetAllItemsOperati
                 .itemsList(new ArrayList<>())
                 .build();
 
-        List<String> ids = new ArrayList<>();
-        for (CartItem cartItem : user.getCartItems()) {
-            ids.add(cartItem.getItemId());
-        }
+        List<String> ids = user.getCartItems().stream()
+                .map(CartItem::getItemId)
+                .collect(Collectors.toList());
 
         GetItemsListInput listInput = GetItemsListInput.builder().ids(ids).build();
         if (listInput.getIds().isEmpty()) {
@@ -59,32 +59,34 @@ public class CartGetAllItemsOperationProcessor implements CartGetAllItemsOperati
 
         GetItemsListOutput items = zooStoreRestClient.getItemsList(listInput);
 
-        BigDecimal totalPrice = BigDecimal.valueOf(0.0);
-        for (ItemsToDtoSetMap i : items.getItemsList()) {
+        BigDecimal totalPrice = items.getItemsList().stream()
+                .map(i -> {
+                    CartItem cartItem = user.getCartItems()
+                            .stream()
+                            .filter(filterItem -> filterItem.getItemId().equals(i.getId()))
+                            .findFirst()
+                            .orElseThrow(() -> new CartItemNotFoundException("cart item not found."));
 
-            CartItem cartItem = user.getCartItems()
-                    .stream()
-                    .filter(filterItem -> filterItem.getItemId().equals(i.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new CartItemNotFoundException("cart item not found."));
+                    BigDecimal itemTotalPrice = BigDecimal.valueOf(cartItem.getPrice().doubleValue() * cartItem.getQuantity());
 
-            totalPrice = totalPrice.add(BigDecimal.valueOf(cartItem.getPrice().doubleValue() * cartItem.getQuantity()));
+                    GetAllItemsFromCartOutput output = GetAllItemsFromCartOutput.builder()
+                            .id(i.getId())
+                            .title(i.getTitle())
+                            .description(i.getDescription())
+                            .archived(i.isArchived())
+                            .vendorID(i.getVendorID())
+                            .multimedia(i.getMultimedia())
+                            .tags(i.getTags())
+                            .quantity(String.valueOf(cartItem.getQuantity()))
+                            .price(String.valueOf(itemTotalPrice))
+                            .build();
 
-            GetAllItemsFromCartOutput output = GetAllItemsFromCartOutput.builder()
-                    .id(i.getId())
-                    .title(i.getTitle())
-                    .description(i.getDescription())
-                    .archived(i.isArchived())
-                    .vendorID(i.getVendorID())
-                    .multimedia(i.getMultimedia())
-                    .tags(i.getTags())
-                    .quantity(String.valueOf(cartItem.getQuantity()))
-                    .price(String.valueOf(cartItem.getPrice().doubleValue() * cartItem.getQuantity()))
-                    .build();
+                    outputList.getItemsList().add(output);
 
-            outputList.getItemsList().add(output);
+                    return itemTotalPrice;
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        }
         outputList.setTotalPrice(totalPrice);
         return outputList;
 

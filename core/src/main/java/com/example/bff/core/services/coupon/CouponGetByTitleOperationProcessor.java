@@ -28,6 +28,7 @@ public class CouponGetByTitleOperationProcessor implements CouponGetByTitleOpera
                 .title(coupon.getTitle())
                 .discount(coupon.getDiscount().toString())
                 .build();
+
         return output;
     }
 }

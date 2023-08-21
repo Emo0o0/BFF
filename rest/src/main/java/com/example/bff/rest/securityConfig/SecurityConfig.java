@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(c -> c
                         .requestMatchers(HttpMethod.POST, "/user/login", "/user").permitAll()
-                        //.requestMatchers(HttpMethod.GET,"/items","/user").authenticated()
+                        .requestMatchers(HttpMethod.POST,"/user/register","/user").permitAll()
                         .requestMatchers(HttpMethod.GET, "v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
