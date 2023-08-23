@@ -98,10 +98,10 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UserNotFoundException("User does not exist"));
 
-        BigDecimal totalPrice = new BigDecimal(0);
-        for (CartItem cartItem : user.getCartItems()) {
-            totalPrice = totalPrice.add(cartItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-        }
+        BigDecimal totalPrice = user.getCartItems().stream()
+                .map(cartItem -> cartItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         return totalPrice;
 
     }
