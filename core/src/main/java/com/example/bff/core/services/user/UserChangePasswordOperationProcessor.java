@@ -3,6 +3,7 @@ package com.example.bff.core.services.user;
 import com.example.bff.api.inputoutput.user.changePassword.ChangeUserPasswordInput;
 import com.example.bff.api.inputoutput.user.changePassword.ChangeUserPasswordOutput;
 import com.example.bff.api.inputoutput.user.changePassword.UserChangePasswordOperation;
+import com.example.bff.core.exceptions.InvalidCredentialsException;
 import com.example.bff.persistence.entities.User;
 import com.example.bff.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,11 @@ public class UserChangePasswordOperationProcessor implements UserChangePasswordO
         if (input.getOldPassword().isBlank()) {
             throw new RuntimeException();
         }
-        if (passwordEncoder.matches(input.getOldPassword(), user.getPassword())) {
-            if (!input.getNewPassword().isBlank()) {
-                user.setPassword(passwordEncoder.encode(input.getNewPassword()));
-            }
+        if (!passwordEncoder.matches(input.getOldPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Wrong credentials");
         }
-        //user.setEmail(input.getEmail());
+
+        user.setPassword(passwordEncoder.encode(input.getNewPassword()));
 
         userRepository.save(user);
 

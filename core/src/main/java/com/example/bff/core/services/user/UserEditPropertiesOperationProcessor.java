@@ -3,9 +3,12 @@ package com.example.bff.core.services.user;
 import com.example.bff.api.inputoutput.user.editUser.EditUserPropertiesInput;
 import com.example.bff.api.inputoutput.user.editUser.EditUserPropertiesOutput;
 import com.example.bff.api.inputoutput.user.editUser.UserEditPropertiesOperation;
+import com.example.bff.core.exceptions.UserNotFoundException;
 import com.example.bff.persistence.entities.User;
 import com.example.bff.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,24 +23,29 @@ public class UserEditPropertiesOperationProcessor implements UserEditPropertiesO
     @Override
     public EditUserPropertiesOutput process(EditUserPropertiesInput input) {
 
-        if (!userRepository.existsById(UUID.fromString(input.getId()))) {
-            throw new RuntimeException("User not found");
-        }
-
-        Optional<User> optionalUser = userRepository.findById(UUID.fromString(input.getId()));
-        User user = optionalUser.get();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(
+                authentication.getName()).orElseThrow(() -> new UserNotFoundException("User does not exist"));
 
         if (!input.getName().isBlank()) {
-            user.setName(input.getName());
+            if (input.getName().length() >= 5 && input.getName().length() <= 100) {
+                user.setName(input.getName());
+            }
         }
         if (!input.getPassword().isBlank()) {
-            user.setPassword(input.getPassword());
+            if (input.getPassword().length() >= 6 && input.getPassword().length() <= 18) {
+                user.setPassword(input.getPassword());
+            }
         }
         if (!input.getPhone().isBlank()) {
-            user.setPhone(input.getPhone());
+            if (input.getPhone().length() >= 6 && input.getPhone().length() <= 15) {
+                user.setPhone(input.getPhone());
+            }
         }
         if (!input.getUsername().isBlank()) {
-            user.setUsername(input.getUsername());
+            if (input.getUsername().length() >= 4 && input.getUsername().length() <= 15) {
+                user.setUsername(input.getUsername());
+            }
         }
         if (!input.getEmail().isBlank()) {
             user.setEmail(input.getEmail());

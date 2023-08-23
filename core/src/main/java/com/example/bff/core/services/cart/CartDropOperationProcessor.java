@@ -3,6 +3,7 @@ package com.example.bff.core.services.cart;
 import com.example.bff.api.inputoutput.cart.dropCart.CartDropOperation;
 import com.example.bff.api.inputoutput.cart.dropCart.DropCartInput;
 import com.example.bff.api.inputoutput.cart.dropCart.DropCartOutput;
+import com.example.bff.core.exceptions.NoItemsInCartException;
 import com.example.bff.core.exceptions.UserNotFoundException;
 import com.example.bff.persistence.entities.CartItem;
 import com.example.bff.persistence.entities.User;
@@ -29,6 +30,10 @@ public class CartDropOperationProcessor implements CartDropOperation {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(
                 authentication.getName()).orElseThrow(() -> new UserNotFoundException("User does not exist"));
+
+        if(user.getCartItems().isEmpty()){
+            throw new NoItemsInCartException("Your cart is empty");
+        }
 
         cartItemRepository.deleteAll(user.getCartItems());
 

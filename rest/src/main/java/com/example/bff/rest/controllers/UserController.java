@@ -103,7 +103,8 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/deleteCart")
-    public ResponseEntity<DropCartOutput> dropCart(@RequestBody DropCartInput input) {
+    public ResponseEntity<DropCartOutput> dropCart() {
+        DropCartInput input = DropCartInput.builder().build();
         return ResponseEntity.status(200).body(cartDropOperation.process(input));
     }
 
@@ -119,12 +120,12 @@ public class UserController {
     }
 
     @PostMapping(path = "/purchase")
-    public ResponseEntity<PurchaseOutput> purchase(@RequestBody PurchaseInput input){
+    public ResponseEntity<PurchaseOutput> purchase(@RequestBody PurchaseInput input) {
         return ResponseEntity.status(200).body(cartPurchaseOperation.process(input));
     }
 
     @PostMapping(path = "/return")
-    public ResponseEntity<ReturnItemsOutput> returnItems(@RequestBody ReturnItemsListInput input){
+    public ResponseEntity<ReturnItemsOutput> returnItems(@RequestBody ReturnItemsListInput input) {
         return ResponseEntity.status(200).body(returnItemsOperation.process(input));
     }
 }
