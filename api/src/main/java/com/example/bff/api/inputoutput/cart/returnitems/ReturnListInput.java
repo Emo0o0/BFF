@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReturnItemsListInput implements OperationInput {
+public class ReturnListInput implements OperationInput {
 
         private String orderRecordId;
         private List<ReturnItemsInput> returnItems;

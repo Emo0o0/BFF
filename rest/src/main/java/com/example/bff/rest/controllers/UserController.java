@@ -12,14 +12,13 @@ import com.example.bff.api.inputoutput.cart.dropCart.DropCartOutput;
 import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.CartGetAllItemsOperation;
 import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromCartInput;
 import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromCartListOutput;
-import com.example.bff.api.inputoutput.cart.getAllItemsFromCart.GetAllItemsFromCartOutput;
 import com.example.bff.api.inputoutput.cart.purchase.CartPurchaseOperation;
 import com.example.bff.api.inputoutput.cart.purchase.PurchaseInput;
 import com.example.bff.api.inputoutput.cart.purchase.PurchaseOutput;
 import com.example.bff.api.inputoutput.cart.removeItemFromCart.CartRemoveItemOperation;
 import com.example.bff.api.inputoutput.cart.removeItemFromCart.RemoveItemFromCartInput;
 import com.example.bff.api.inputoutput.cart.removeItemFromCart.RemoveItemFromCartOutput;
-import com.example.bff.api.inputoutput.cart.returnitems.ReturnItemsListInput;
+import com.example.bff.api.inputoutput.cart.returnitems.ReturnListInput;
 import com.example.bff.api.inputoutput.cart.returnitems.ReturnItemsOperation;
 import com.example.bff.api.inputoutput.cart.returnitems.ReturnItemsOutput;
 import com.example.bff.api.inputoutput.user.changePassword.ChangeUserPasswordInput;
@@ -36,16 +35,10 @@ import com.example.bff.api.inputoutput.user.registerUser.RegisterUserOutput;
 import com.example.bff.api.inputoutput.user.registerUser.UserRegisterOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -125,7 +118,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/return")
-    public ResponseEntity<ReturnItemsOutput> returnItems(@RequestBody ReturnItemsListInput input) {
+    public ResponseEntity<ReturnItemsOutput> returnItems(@RequestBody ReturnListInput input) {
         return ResponseEntity.status(200).body(returnItemsOperation.process(input));
     }
 }

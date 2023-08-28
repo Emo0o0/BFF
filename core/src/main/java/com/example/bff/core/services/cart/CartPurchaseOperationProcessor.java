@@ -52,34 +52,10 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
             couponTitle = coupon.getTitle();
         }
 
-        user.getCartItems().stream().forEach(item -> {
-            GetItemFromStorageOutput storageItem;
-            try {
-                storageItem = zooStorageRestClient.getItemFromStorage(item.getItemId());
-            } catch (Exception e) {
-                throw new ItemNotFoundException("Item was not found in storage");
-            }
+        checkStorageQuantity(user);
 
-            if (item.getQuantity() > Integer.parseInt(storageItem.getQuantity())) {
-                throw new NotEnoughQuantityException("Not enough quantity of item with id: " + item.getItemId());
-            }
-        });
+        zooStorageRestClient.createOrderRecord(inputForStorageRecord(user, couponTitle, couponDiscount));
 
-        CreateOrderRecordInput input = CreateOrderRecordInput.builder()
-                .userId(user.getId().toString())
-                .items(user.getCartItems().stream()
-                        .map(o -> OrderRecordItemOutput.builder()
-                                .itemId(o.getItemId())
-                                .quantity(String.valueOf(o.getQuantity()))
-                                .price(o.getPrice().toString())
-                                .build())
-                        .collect(Collectors.toList()))
-                .coupon(couponTitle)
-                .discount(String.valueOf(cartTotalPrice().multiply(BigDecimal.valueOf(couponDiscount / 100))))
-                .totalPrice(cartTotalPrice().multiply(BigDecimal.valueOf(1 - (couponDiscount / 100))).toString())
-                .build();
-
-        zooStorageRestClient.createOrderRecord(input);
 
         cartItemRepository.deleteAll(user.getCartItems());
         user.getCartItems().clear();
@@ -103,6 +79,39 @@ public class CartPurchaseOperationProcessor implements CartPurchaseOperation {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return totalPrice;
+    }
 
+    private Boolean checkStorageQuantity(User user) {
+
+        user.getCartItems().stream().forEach(item -> {
+            GetItemFromStorageOutput storageItem;
+            try {
+                storageItem = zooStorageRestClient.getItemFromStorage(item.getItemId());
+            } catch (Exception e) {
+                throw new ItemNotFoundException("Item was not found in storage");
+            }
+
+            if (item.getQuantity() > Integer.parseInt(storageItem.getQuantity())) {
+                throw new NotEnoughQuantityException("Not enough quantity of item with id: " + item.getItemId());
+            }
+        });
+        return true;
+    }
+
+    private CreateOrderRecordInput inputForStorageRecord(User user, String couponTitle, Double couponDiscount) {
+
+        return CreateOrderRecordInput.builder()
+                .userId(user.getId().toString())
+                .items(user.getCartItems().stream()
+                        .map(o -> OrderRecordItemOutput.builder()
+                                .itemId(o.getItemId())
+                                .quantity(String.valueOf(o.getQuantity()))
+                                .price(o.getPrice().toString())
+                                .build())
+                        .collect(Collectors.toList()))
+                .coupon(couponTitle)
+                .discount(String.valueOf(cartTotalPrice().multiply(BigDecimal.valueOf(couponDiscount / 100))))
+                .totalPrice(cartTotalPrice().multiply(BigDecimal.valueOf(1 - (couponDiscount / 100))).toString())
+                .build();
     }
 }

@@ -1,7 +1,6 @@
 package com.example.bff.core.services.cart;
 
-import com.example.bff.api.inputoutput.cart.returnitems.ReturnItemsInput;
-import com.example.bff.api.inputoutput.cart.returnitems.ReturnItemsListInput;
+import com.example.bff.api.inputoutput.cart.returnitems.ReturnListInput;
 import com.example.bff.api.inputoutput.cart.returnitems.ReturnItemsOperation;
 import com.example.bff.api.inputoutput.cart.returnitems.ReturnItemsOutput;
 import com.example.bff.core.exceptions.UserNotFoundException;
@@ -16,8 +15,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.stream.Collectors;
+
+
+/**
+ *
+ * Builds input for ZooStoreStorage's OrderReturnItemOperationProcessor by
+ * mapping BFF's ReturnListInput to ZooStoreStorage's ReturnItemListInput
+ *
+ */
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +33,7 @@ public class ReturnItemsOperationProcessor implements ReturnItemsOperation {
     private final UserRepository userRepository;
 
     @Override
-    public ReturnItemsOutput process(ReturnItemsListInput input) {
+    public ReturnItemsOutput process(ReturnListInput input) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(
